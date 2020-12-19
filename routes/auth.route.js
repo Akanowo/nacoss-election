@@ -64,10 +64,23 @@ const routes = () => {
 
   authRouter.route('/logout')
     .get((req, res) => {
-      req.logOut();
-      return res.json({
-        status: 'logged out',
-        message: 'Logout successful'
+      debug(req.session);
+      debug(req.user);
+      // req.logOut();
+      req.session.destroy((err) => {
+        if(err) {
+          return res.json({
+            status: 'failed',
+            message: 'Logout unsuccessful',
+            error: err
+          });
+        }
+        debug(req.session);
+        debug(req.user);
+        return res.json({
+          status: 'logged out',
+          message: 'Logout successful'
+        });
       });
     });
 

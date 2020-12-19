@@ -14,6 +14,7 @@ const routes = () => {
     uploadImage,
     getGenPasswordPage,
     generatePasswords,
+    logout,
     middleware,
     } = adminController;
 
@@ -53,6 +54,9 @@ const routes = () => {
   
   adminRouter.route('/generate-passwords/generate')
     .get(generatePasswords);
+
+  adminRouter.route('/logout')
+    .get(logout);
   return adminRouter;
 };
 
