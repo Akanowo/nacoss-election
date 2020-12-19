@@ -1,0 +1,53 @@
+<%- include('partials/header'); %>
+<main>
+  <div class="container-fluid">
+    <h1 class="mt-4">Generate Student Passwords</h1>
+    <ol class="breadcrumb mb-4">
+      <li class="breadcrumb-item active">Generate Passwords</li>
+    </ol>
+
+    <% if (noUsers) { %>
+      <button type="submit" id="generateBtn" class="btn btn-primary">Generate</button><br>
+    <% } %>
+
+    <% if (users) { %>
+    <div class="card mb-4">
+      <div class="card-header">
+        <i class="fas fa-table mr-1"></i>
+        <span id="fileName">Nacoss Passwords</span>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Matric Number</th>
+                <th>Password</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <button type="button" id="pdf-btn" class="btn btn-danger m-2 mb-2">To PDF</button>
+              </tr>
+              <tr>
+                <button type="button" id="csv-btn" class="btn btn-success m-2 mb-2">To CSV</button>
+              </tr>
+            </tfoot>
+            <tbody>
+              <% users.forEach(user => { %>
+              <tr>
+                <td><%= user.name %></td>
+                <td><%= user.matNo %></td>
+                <td><%= user.password %></td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <% } %>
+</main>
+
+<%- include('partials/footer'); %>

@@ -1,0 +1,34 @@
+<%- include('partials/header'); %>
+<main>
+  <div class="container-fluid">
+    <h1 class="mt-4">Map Candidates</h1>
+    <ol class="breadcrumb mb-4">
+      <li class="breadcrumb-item active">Map Candidates</li>
+    </ol>
+
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="candidate">Candidate</label>
+        <select required class="form-control" name="candidate" id="candidate">
+          <option selected value="Select Candidate">Select candidate</option>
+          <% arr.forEach(candidate => { %>
+            <option value="<%= candidate.id %>"><%= candidate.name %> - <%= candidate.matNo %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="candidate">Position</label>
+        <select required class="form-control" name="position" id="position">
+          <option selected value="Select Position">Select Position</option>
+          <% positions.forEach(position => { %>
+            <option value="<%= position._id %>"><%= position.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <input type="submit" class="btn btn-primary" value="Map">
+    </form>
+  </div>
+</main>
+
+<%- include('partials/footer'); %>

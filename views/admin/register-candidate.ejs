@@ -1,0 +1,23 @@
+<%- include('partials/header'); %>
+<main>
+  <div class="container-fluid">
+    <h1 class="mt-4">Register Candidate</h1>
+    <ol class="breadcrumb mb-4">
+      <li class="breadcrumb-item active">Register Candidate</li>
+    </ol>
+
+    <form id="registerForm">
+      <div class="form-group">
+        <label for="matNo">Matric Number</label>
+        <input type="text" required name="matNo" id="matNo" class="form-control">
+      </div>
+      <!-- Button trigger modal -->
+    <button type="button" id="uploadImgBtn" class="btn btn-dark btn-block btn-sm">
+      Upload Image
+    </button><br>
+      <input type="submit" class="btn btn-primary" value="Create">
+    </form>
+  </div>
+</main>
+
+<%- include('partials/footer'); %>

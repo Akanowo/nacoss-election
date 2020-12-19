@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nacoss Elections</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
+    integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css" />
+  <!-- <link rel="stylesheet" href="../assets/bootstrap/bootstrap-grid.min.css" />
+    <link rel="stylesheet" href="../assets/bootstrap/bootstrap.min.css" /> -->
+    <link rel="stylesheet" href="/css/toastr.css" />
+  <link rel="stylesheet" href="/css/vote.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="header-info">
+      <!-- banner start -->
+      <div class="banner">
+        <h2 class="banner-title">nacoss general</h2>
+        <h2 class="banner-title">election 2020/2021</h2>
+        <p class="banner-subtitle">Welcome, <%= user %> </p>
+        <!-- vote now button -->
+        <a href="#candidates" class="btn main-btn">vote now</a>
+        <!-- vote now button end-->
+      </div>
+      <!-- banner end -->
+    </div>
+    <!-- header image -->
+    <div class="header-img"></div>
+    <!-- header image end -->
+  </header>
+  <!-- content divider start -->
+  <div class="content-divider"></div>
+  <!-- content divider end -->
+
+  <!-- candidates start -->
+  <section class="candidates" id="candidates">
+    <h4 class="main-text">meet the future</h4>
+    <h3 class="main-title">election candidates</h3>
+
+      <!-- form start -->
+      <form id="voteForm" class="form-group">
+        <div class="accordion js-accordion">
+          <% positions.forEach(position => { %>
+            <div class="accordion__item js-accordion-item">
+              <div id="<%=position.name%>" class="accordion-header js-accordion-header"><%=position.name%></div>
+              <div class="accordion-body js-accordion-body">
+                <div class="accordion-body__contents">
+                  <!-- slider start -->
+                  <div class="slider">
+                    <!-- single card start -->
+                    <% for( let i = 0; i < posts[position.name].candidates.length; i++ ) { %>
+                      <div class="candidate-card">
+                        <img src="<%= posts[position.name].candidates[i].image %>" class="d-inline w-100 img-fluid" alt="<%=posts[position.name].candidates[i].name%>" />
+                        <h2 id="<%= posts[position.name].candidates[i].matNo %>" class="post-title"><%=posts[position.name].candidates[i].name%></h2>
+                        <button id="<%=position.name%>" type="button" class="btn vote-btn" name="<%=posts[position.name].candidates[i].name%>"
+                          value="<%=posts[position.name].candidates[i].id%>">vote</button>
+                      </div>
+                    <% } %>
+                    <!-- single card end -->
+                  </div>
+                  <!-- slider end -->
+                </div>
+                <!-- end of sub accordion -->
+              </div>
+              <!-- end of accordion body -->
+            </div>
+          <% }) %> 
+          <!-- end of accordion item -->
+        </div>
+        <!-- end of accordion -->
+        <button type="submit" class="btn btn-submit">submit</button>
+      </form>
+      <!-- form end -->
+      <!-- floated pic -->
+      <img src="/images/Asset-3.png" alt="" class="img-right" />
+      <!-- floated pic end -->
+    </section>
+    <!-- candidates end -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-ho+j7jyWK8fNQe+A12Hb8AhRq26LrZ/JpcUGGOn+Y7RsweNrtN/tE3MoK7ZeZDyx" crossorigin="anonymous">
+</script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script src="/js/accordion.js"></script>
+  <script src="/js/parsley.min.js"></script>
+  <script src="/js/toastr.js"></script>
+  <script src="/js/script.min.js"></script>
+  </body>
+</html>

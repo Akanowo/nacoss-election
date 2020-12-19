@@ -1,0 +1,23 @@
+<%- include('partials/header'); %>
+<main>
+  <div class="container-fluid">
+    <h1 class="mt-4">Create Position</h1>
+    <ol class="breadcrumb mb-4">
+      <li class="breadcrumb-item active">Create Position</li>
+    </ol>
+
+    <form id="createForm">
+      <div class="form-group">
+        <label for="position">Position Name</label>
+        <input type="text" required name="position-name" id="position" class="form-control" aria-describedby="helpId">
+      </div>
+      <div class="form-group">
+        <label for="position-desc">Position Description</label>
+        <textarea required class="form-control" name="position-desc" id="position-desc" rows="3"></textarea>
+      </div>
+      <input type="submit" class="btn btn-primary" value="Create">
+    </form>
+  </div>
+</main>
+
+<%- include('partials/footer'); %>

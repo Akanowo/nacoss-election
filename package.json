@@ -1,0 +1,27 @@
+{
+  "name": "nacoss-election-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "set DEBUG=app,app* && nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "debug": "^4.3.1",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "formidable": "^1.2.2",
+    "http-errors": "^1.8.0",
+    "mongoose": "^5.10.18",
+    "nanoid": "^3.1.18",
+    "nodemon": "^2.0.6",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
+    "pdfkit": "^0.11.0"
+  }
+}
