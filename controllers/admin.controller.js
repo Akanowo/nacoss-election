@@ -1878,7 +1878,7 @@ const adminController = () => {
         const candidate = await Candidate.findOne({ _id: oneCandidate.candidateId });
         const position = await Position.findOne({ _id: oneCandidate.positionId });
         const candidateDetail = await User.findOne({ matNo: candidate.matNo });
-        const candidateVote = await VoteCount.findOne({ positionId: oneCandidate.positionId });
+				const candidateVote = await VoteCount.findOne({ candidateId: oneCandidate.candidateId });
         const imageSplit = candidate.image.split('/');
         electionDetails.push({
           name: candidateDetail.name,
