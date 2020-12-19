@@ -591,7 +591,7 @@ if(window.location.pathname.includes('/admin')) {
       cancelButtonText: 'No'
     }).then(async (result) => {
       if(result.isConfirmed) {
-        const logoutResponse = await axios.get('/auth/logout');
+        const logoutResponse = await axios.get('/admin/logout');
         if(logoutResponse.data.status === 'logged out') {
           window.location.href = '/auth/login/admin';
         }

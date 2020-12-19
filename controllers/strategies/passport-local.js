@@ -35,7 +35,7 @@ passport.use(new Strategy(
           }
         }
       } catch (error) {
-
+        return done(error, false, { message: 'An error occured' });
       }
     }
 

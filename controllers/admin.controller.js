@@ -1990,7 +1990,24 @@ const adminController = () => {
         });
       }
     }
-  };
+	};
+	
+	const logout = (req, res) => {
+		req.logOut();
+		req.session.destroy((err) => {
+			if(err) {
+				return res.json({
+					status: 'failed',
+					message: 'Logout failed',
+					error: err
+				});
+			}
+			return res.json({
+				status: 'logged out',
+				message: 'Logout successful',
+			});
+		});
+	};
 
   const middleware = (req, res, next) => {
     try {
@@ -2013,7 +2030,8 @@ const adminController = () => {
     fetchCandidates,
     uploadImage,
     getGenPasswordPage,
-    generatePasswords,
+		generatePasswords,
+		logout,
     middleware
   };
 };
