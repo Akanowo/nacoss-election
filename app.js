@@ -9,7 +9,6 @@ const authRoutes = require('./routes/auth.route');
 const voteRoutes = require('./routes/vote.route');
 const adminRoutes = require('./routes/admin.route');
 const passport = require('passport');
-require('dotenv').config();
 
 
 const app = express();
@@ -24,7 +23,7 @@ const sess = {
 if (app.get('env') === 'production') {
 	app.set('trust proxy', 1); // trust first proxy
 	sess.cookie.secure = true; // serve secure cookies
-	mongoose.connect(process.env.MONGODBURI, { useFindAndModify: false, useNewUrlParser: true, useUnifiedTopology: true });
+	mongoose.connect('mongodb+srv://Anonymous:pa$$w0rd1234,.@cluster0.hsxk2.mongodb.net/BellsNacossDB?retryWrites=true&w=majority', { useFindAndModify: false, useNewUrlParser: true, useUnifiedTopology: true });
 } else {
 	mongoose.connect('mongodb://localhost:27017/nacossDB', { useFindAndModify: false, useNewUrlParser: true, useUnifiedTopology: true });
 }

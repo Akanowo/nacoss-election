@@ -1993,7 +1993,6 @@ const adminController = () => {
   };
 
   const middleware = (req, res, next) => {
-    debug(req.session);
     try {
       if (req.session.passport.user) {
         return next();
