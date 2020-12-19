@@ -54,7 +54,7 @@
                     <!-- single card start -->
                     <% for( let i = 0; i < posts[position.name].candidates.length; i++ ) { %>
                       <div class="candidate-card">
-                        <img src="<%= posts[position.name].candidates[i].image %>" class="d-inline w-100 img-fluid" alt="<%=posts[position.name].candidates[i].name%>" />
+                        <img src="<%= posts[position.name].candidates[i].image %>" alt="<%=posts[position.name].candidates[i].name%>" />
                         <h2 id="<%= posts[position.name].candidates[i].matNo %>" class="post-title"><%=posts[position.name].candidates[i].name%></h2>
                         <button id="<%=position.name%>" type="button" class="btn vote-btn" name="<%=posts[position.name].candidates[i].name%>"
                           value="<%=posts[position.name].candidates[i].id%>">vote</button>

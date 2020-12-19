@@ -15,7 +15,6 @@ function generateRandomColor() {
     url: '/admin/get-candidates',
     method: 'GET'
   });
-  console.log(response);
   const labels = [];
   const data = [];
   const backgroundColor = [];
@@ -58,7 +57,7 @@ function generateRandomColor() {
     for(let color of positionColors) {
       candidatesColors.push(color.candidateColor);
     }
-      var myPieChart = new Chart(ctx, {
+      const myPieChart = new Chart(ctx, {
         type: 'pie',
         data: {
           labels: candidatesNames,
@@ -69,6 +68,4 @@ function generateRandomColor() {
         },
       });
   }
-
-  
 }());

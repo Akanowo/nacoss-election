@@ -213,10 +213,13 @@
   -ms-transition: var(--main-transition);
   -o-transition: var(--main-transition);
 }
+
 .candidate-card img {
   display: block;
-  width: 88%;
+  width: 300px;
+  height: 300px;
   margin: 0 auto;
+  object-fit: cover;
   border-radius: 10px;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -279,6 +282,21 @@
 }
 /* CANDIDATES END */
 /* media queries start */
+
+@media screen and (max-width: 576px) {
+
+  .candidate-card {
+    width: 50%;
+    margin: 5px auto;
+  }
+
+  .candidate-card img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+  }
+}
+
 @media screen and (min-width: 576px) {
   .header-img {
     margin-right: 10px;
