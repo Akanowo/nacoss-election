@@ -11,7 +11,7 @@ const adminRoutes = require('./routes/admin.route');
 const passport = require('passport');
 require('dotenv').config();
 
-
+// Initialized express
 const app = express();
 
 const sess = {
