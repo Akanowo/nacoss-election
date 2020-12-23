@@ -1505,6 +1505,46 @@ const users = [
 		"hasVoted": false
 	},
 	{
+		"matNo": "2017/5609",
+		"name": "AKUJOBI ANSELEM",
+		"password": "",
+		"gender": "",
+		"department": "",
+		"phone": "",
+		"isFirstLogin": true,
+		"hasVoted": false
+	},
+	{
+		"matNo": "2018/7279",
+		"name": "EKE CHIBIKE",
+		"password": "",
+		"gender": "",
+		"department": "",
+		"phone": "",
+		"isFirstLogin": true,
+		"hasVoted": false
+	},
+	{
+		"matNo": "2018/7315",
+		"name": "OKEKE RONALD",
+		"password": "",
+		"gender": "",
+		"department": "",
+		"phone": "",
+		"isFirstLogin": true,
+		"hasVoted": false
+	},
+	{
+		"matNo": "2017/5986",
+		"name": "ODOGUN OMOLEWA SEKINAT",
+		"password": "",
+		"gender": "",
+		"department": "",
+		"phone": "",
+		"isFirstLogin": true,
+		"hasVoted": false
+	},
+	{
 		"matNo": "2018/7244",
 		"name": "OLOWOGORIOYE AYOMIDE SAMUEL",
 		"password": "",
