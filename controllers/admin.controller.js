@@ -12,6 +12,14 @@ const { nanoid } = require('nanoid');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const cloudinary = require('cloudinary').v2;
+
+// cloudinary init
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 const users = [
 	{
@@ -1707,335 +1715,301 @@ const users = [
 ];
 
 const adminController = () => {
-  const getIndex = async (req, res) => {
-    const allCandidates = await CandidatePosition.find();
-    const allVotes = await VoteCount.find();
-    const positions = await Position.find();
-    const electionDetails = [];
+	const getIndex = async (req, res) => {
+		const allCandidates = await CandidatePosition.find();
+		const allVotes = await VoteCount.find();
+		const positions = await Position.find();
+		const electionDetails = [];
 
-    if(allCandidates.length === 0 || !allCandidates) {
-      return res.render('admin/index', { electionDetails: [], positions: [] });
-    } else {
-      for (let oneCandidate of allCandidates) {
-        const candidate = await Candidate.findOne({ _id:  oneCandidate.candidateId});
-        const position = await Position.findOne({ _id:  oneCandidate.positionId});
-        const candidateDetail = await User.findOne({ matNo: candidate.matNo });
-        const votes = allVotes.find((x) => x.candidateId === oneCandidate.candidateId);
-        electionDetails.push({
-          name: candidateDetail.name,
-          matNo: candidate.matNo,
-          post: position.name,
-          votes: votes.voteCount
-        });
-      }
-      return res.render('admin/index', { electionDetails: electionDetails.reverse(), positions });
-    }
-  };
-
-  const getChangePwd = async (req, res) => {
-    try {
-      const admin = await Admin.findOne({ _id: req.session.passport.user });
-      if(admin) {
-        return res.status(200).json({
-          status: 'success',
-          admin
-        });
-      }
-    } catch (error) {
-      return res.status(404).json({
-        status: 'failed',
-        message: 'No admin found'
-      });
-    }
-  };
-
-  const postChangePwd = async (req, res) => {
-    const { user } = req.body;
-    const { password } = req.body;
-    try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const adminUpdate = await Admin.findByIdAndUpdate(user, { password: hashedPassword });
-      if(adminUpdate) {
-        return res.status(200).json({
-          status: 'success',
-          message: 'Admin updated successfully'
-        });
-      }
-    } catch (error) {
-      return res.json({
-        status: 'failed',
-        message: error.message,
-        error
-      });
-    }
-  };
-
-  const createPosition = async (req, res) => {
-    const positionName = req.body.position;
-    const positionDesc = req.body.position_desc;
-    const position = await Position.findOne({ name: positionName });
-    if (position) {
-      return res.status(400).json({
-        status: 'failed',
-        message: 'Position exists'
-      });
-    }
-
-    const newPosition = {
-      name: positionName,
-      desc: positionDesc
-    };
-
-    try {
-      const createdPosition = await Position.create(newPosition);
-      return res.status(201).json({
-        status: 'success',
-        message: 'Position Created Successfully',
-      });
-    } catch (error) {
-      return res.status(500).json({
-        status: 'failed',
-        message: 'Could not create position',
-        error
-      });
-    }
-  };
-
-  const registerCandidate = async (req, res) => {
-    const { matNo } = req.body;
-    const { image } = req.body;
-    const candidate = await Candidate.findOne({ matNo });
-    if (candidate) {
-      return res.status(400).json({
-        status: 'failed',
-        message: 'Candidate exists'
-      });
-    }
-
-    const newCandidate = {
-      matNo,
-      image
-    };
-
-    try {
-      const createdCandidate = await Candidate.create(newCandidate);
-      return res.status(201).json({
-        status: 'success',
-        message: 'Candidate created successfully',
-      });
-    } catch (error) {
-      return res.status(400).json({
-        status: 'failed',
-        message: 'Could not create candidate',
-        error
-      });
-    }
-  };
-
-  const getMapCandidates = async (req, res) => {
-    try {
-      const candidates = await Candidate.find();
-      const positions = await Position.find();
-      if (!candidates || !positions) {
-        return res.json({
-          status: 'Failed',
-          message: 'Create candidates first'
-        });
-      }
-      const arr = [];
-      for (let candidate of candidates) {
-        const candidateDetail = await User.findOne({ matNo: candidate.matNo });
-        arr.push({
-          matNo: candidate.matNo,
-          name: candidateDetail.name,
-          id: candidate._id
-        });
-      }
-      return res.render('admin/map-candidates', { arr, positions });
-    } catch (error) {
-      return res.json({
-        status: 'Failed',
-        message: 'Create candidates first',
-        error
-      });
-    }
-  };
-
-  const postMapCandidate = async (req, res) => {
-    const { candidateId } = req.body;
-    const { positionId } = req.body;
-    try {
-      const candidateposition = await CandidatePosition.findOne({ candidateId });
-      const voteCount = await VoteCount.findOne({ candidateId });
-      if (candidateposition || voteCount) {
-        return res.status(400).json({
-          status: 'failed',
-          message: 'Candidate has been mapped already'
-        });
-      }
-    } catch (error) {
-      if (candidateposition) {
-        return res.status(400).json({
-          status: 'failed',
-          error
-        });
-      }
-    }
-
-    const newcandidatePosition = {
-      candidateId,
-      positionId
-    };
-
-    const voteCount = {
-      candidateId,
-      positionId
-    };
-
-    try {
-      const createdCandidatePosition = await CandidatePosition.create(newcandidatePosition);
-      const createdVoteCount = await VoteCount.create(voteCount);
-      return res.status(201).json({
-        status: 'success',
-        message: 'Candidate mapped to position successfully',
-      });
-    } catch (error) {
-      return res.status(500).json({
-        status: 'failed',
-        message: 'Could not map candidate to position',
-        error
-      });
-    }
-  };
-
-  const fetchCandidates = async (req, res) => {
-
-    const electionDetails = [];
-    try {
-      const allCandidates = await CandidatePosition.find();
-      const positions = await Position.find();
-      for (let oneCandidate of allCandidates) {
-        const candidate = await Candidate.findOne({ _id: oneCandidate.candidateId });
-        const position = await Position.findOne({ _id: oneCandidate.positionId });
-        const candidateDetail = await User.findOne({ matNo: candidate.matNo });
-				const candidateVote = await VoteCount.findOne({ candidateId: oneCandidate.candidateId });
-        const imageSplit = candidate.image.split('/');
-        electionDetails.push({
-          name: candidateDetail.name,
-          id: candidate._id,
-          matNo: candidate.matNo,
-          image: `${'/' + imageSplit[2] + '/' + imageSplit[3] + '/' + imageSplit[4] }`,
-          post: position.name,
-          votes: candidateVote.voteCount
-        });
-      }
-
-      const posts = {
-      };
-
-      const allVotes = await VoteCount.find();
-
-      for(let position of positions) {
-        const postContesters = electionDetails.filter((x) => x.post === position.name);
-        const positionVoters = await VoteCount.find({ positionId: position._id });
-        let totalPositionVotes; 
-        for(let i = 0; i < positionVoters.length; i++) {
-          totalPositionVotes += positionVoters[i].voteCount;
-        }
-        posts[position.name] = {};
-        posts[position.name].candidates = postContesters;
-        posts[position.name].totalVotes = totalPositionVotes;
-      }
-      return res.status(200).json({
-        status: 'success',
-        positions,
-        posts
-      });
-    } catch(error) {
-      const newError = createError(500, error);
-      return res.status(500).json({
-        status: 'failed',
-        error: newError
-      });
-    }
-  };
-
-  const uploadImage = (req, res) => {
-    const formData = new formidable.IncomingForm();
-    formData.maxFileSize = 2 * 1024 * 1024;
-    formData.parse(req, (err, fields, files) => {
-      if (files.image === undefined || files.image === 'null') {
-        return res.status(400).json({
-          status: 'failed',
-          message: 'No post image recieved'
-        });
-      }
-
-      if (err) {
-        return res.status(400).json({
-          status: 'failed',
-          message: 'An error occured',
-          error: error.message
-        });
-      }
-      const oldPath = files.image.path;
-      const newPath = `public/images/candidates/${files.image.name}`;
-      return fs.rename(oldPath, newPath, (error) => {
-        if (error) {
-          debug('Error: ', error);
-          return res.json({
-            status: 'failed',
-            message: 'Could not upload image',
-            error
-          });
-        }
-        return res.send(`/${newPath}`);
-      });
-    });
-  };
-
-  const getGenPasswordPage = async (req, res) => {
-    try {
-      const users = await User.find();
-      if(!users || users.length === 0) {
-        return res.render('admin/generate-pwd', { noUsers: true, users: [] });
-      }
-      return res.render('admin/generate-pwd', { users , noUsers: false });
-    } catch (error) {
-      debug(error);
-      return res.render('admin/generate-pwd');
-    }
-  };
-
-  const generatePasswords = async (req, res) => {
-    for(let i = 0; i < users.length; i ++) {
-      users[i].password = nanoid(10);
-      try {
-        const newUser = await User.create(users[i]);
-        if(newUser) {
-          debug('New User Created');
-        }
-
-        if(i === users.length -1) {
-          return res.status(201).json({
-            status: 'success',
-            message: 'Passwords generated for all users'
-          });
-        }
-      } catch (error) {
-        return res.status(400).json({
-          status: 'failed',
-          message: 'Passwords not generated',
-          error: error.message
-        });
-      }
-    }
+		if (allCandidates.length === 0 || !allCandidates) {
+			return res.render('admin/index', { electionDetails: [], positions: [] });
+		} else {
+			for (let oneCandidate of allCandidates) {
+				const candidate = await Candidate.findOne({ _id: oneCandidate.candidateId });
+				const position = await Position.findOne({ _id: oneCandidate.positionId });
+				const candidateDetail = await User.findOne({ matNo: candidate.matNo });
+				const votes = allVotes.find((x) => x.candidateId === oneCandidate.candidateId);
+				electionDetails.push({
+					name: candidateDetail.name,
+					matNo: candidate.matNo,
+					post: position.name,
+					votes: votes.voteCount
+				});
+			}
+			return res.render('admin/index', { electionDetails: electionDetails.reverse(), positions });
+		}
 	};
-	
+
+	const getChangePwd = async (req, res) => {
+		try {
+			const admin = await Admin.findOne({ _id: req.session.passport.user });
+			if (admin) {
+				return res.status(200).json({
+					status: 'success',
+					admin
+				});
+			}
+		} catch (error) {
+			return res.status(404).json({
+				status: 'failed',
+				message: 'No admin found'
+			});
+		}
+	};
+
+	const postChangePwd = async (req, res) => {
+		const { user } = req.body;
+		const { password } = req.body;
+		try {
+			const hashedPassword = await bcrypt.hash(password, 10);
+			const adminUpdate = await Admin.findByIdAndUpdate(user, { password: hashedPassword });
+			if (adminUpdate) {
+				return res.status(200).json({
+					status: 'success',
+					message: 'Admin updated successfully'
+				});
+			}
+		} catch (error) {
+			return res.json({
+				status: 'failed',
+				message: error.message,
+				error
+			});
+		}
+	};
+
+	const createPosition = async (req, res) => {
+		const positionName = req.body.position;
+		const positionDesc = req.body.position_desc;
+		const position = await Position.findOne({ name: positionName });
+		if (position) {
+			return res.status(400).json({
+				status: 'failed',
+				message: 'Position exists'
+			});
+		}
+
+		const newPosition = {
+			name: positionName,
+			desc: positionDesc
+		};
+
+		try {
+			const createdPosition = await Position.create(newPosition);
+			return res.status(201).json({
+				status: 'success',
+				message: 'Position Created Successfully',
+			});
+		} catch (error) {
+			return res.status(500).json({
+				status: 'failed',
+				message: 'Could not create position',
+				error
+			});
+		}
+	};
+
+	const registerCandidate = async (req, res) => {
+		const { matNo } = req.body;
+		const { image } = req.body;
+		const candidate = await Candidate.findOne({ matNo });
+		if (candidate) {
+			return res.status(400).json({
+				status: 'failed',
+				message: 'Candidate exists'
+			});
+		}
+
+		const newCandidate = {
+			matNo,
+			image
+		};
+
+		try {
+			const createdCandidate = await Candidate.create(newCandidate);
+			return res.status(201).json({
+				status: 'success',
+				message: 'Candidate created successfully',
+			});
+		} catch (error) {
+			return res.status(400).json({
+				status: 'failed',
+				message: 'Could not create candidate',
+				error
+			});
+		}
+	};
+
+	const getMapCandidates = async (req, res) => {
+		try {
+			const candidates = await Candidate.find();
+			const positions = await Position.find();
+			if (!candidates || !positions) {
+				return res.json({
+					status: 'Failed',
+					message: 'Create candidates first'
+				});
+			}
+			const arr = [];
+			for (let candidate of candidates) {
+				const candidateDetail = await User.findOne({ matNo: candidate.matNo });
+				arr.push({
+					matNo: candidate.matNo,
+					name: candidateDetail.name,
+					id: candidate._id
+				});
+			}
+			return res.render('admin/map-candidates', { arr, positions });
+		} catch (error) {
+			return res.json({
+				status: 'Failed',
+				message: 'Create candidates first',
+				error
+			});
+		}
+	};
+
+	const postMapCandidate = async (req, res) => {
+		const { candidateId } = req.body;
+		const { positionId } = req.body;
+		try {
+			const candidateposition = await CandidatePosition.findOne({ candidateId });
+			const voteCount = await VoteCount.findOne({ candidateId });
+			if (candidateposition || voteCount) {
+				return res.status(400).json({
+					status: 'failed',
+					message: 'Candidate has been mapped already'
+				});
+			}
+		} catch (error) {
+			if (candidateposition) {
+				return res.status(400).json({
+					status: 'failed',
+					error
+				});
+			}
+		}
+
+		const newcandidatePosition = {
+			candidateId,
+			positionId
+		};
+
+		const voteCount = {
+			candidateId,
+			positionId
+		};
+
+		try {
+			const createdCandidatePosition = await CandidatePosition.create(newcandidatePosition);
+			const createdVoteCount = await VoteCount.create(voteCount);
+			return res.status(201).json({
+				status: 'success',
+				message: 'Candidate mapped to position successfully',
+			});
+		} catch (error) {
+			return res.status(500).json({
+				status: 'failed',
+				message: 'Could not map candidate to position',
+				error
+			});
+		}
+	};
+
+	const fetchCandidates = async (req, res) => {
+
+		const electionDetails = [];
+		try {
+			const allCandidates = await CandidatePosition.find();
+			const positions = await Position.find();
+			for (let oneCandidate of allCandidates) {
+				const candidate = await Candidate.findOne({ _id: oneCandidate.candidateId });
+				const position = await Position.findOne({ _id: oneCandidate.positionId });
+				const candidateDetail = await User.findOne({ matNo: candidate.matNo });
+				const candidateVote = await VoteCount.findOne({ candidateId: oneCandidate.candidateId });
+				const imageSplit = candidate.image.split('/');
+				electionDetails.push({
+					name: candidateDetail.name,
+					id: candidate._id,
+					matNo: candidate.matNo,
+					image: `${'/' + imageSplit[2] + '/' + imageSplit[3] + '/' + imageSplit[4]}`,
+					post: position.name,
+					votes: candidateVote.voteCount
+				});
+			}
+
+			const posts = {
+			};
+
+			const allVotes = await VoteCount.find();
+
+			for (let position of positions) {
+				const postContesters = electionDetails.filter((x) => x.post === position.name);
+				const positionVoters = await VoteCount.find({ positionId: position._id });
+				let totalPositionVotes;
+				for (let i = 0; i < positionVoters.length; i++) {
+					totalPositionVotes += positionVoters[i].voteCount;
+				}
+				posts[position.name] = {};
+				posts[position.name].candidates = postContesters;
+				posts[position.name].totalVotes = totalPositionVotes;
+			}
+			return res.status(200).json({
+				status: 'success',
+				positions,
+				posts
+			});
+		} catch (error) {
+			const newError = createError(500, error);
+			return res.status(500).json({
+				status: 'failed',
+				error: newError
+			});
+		}
+	};
+
+	const getGenPasswordPage = async (req, res) => {
+		try {
+			const users = await User.find();
+			if (!users || users.length === 0) {
+				return res.render('admin/generate-pwd', { noUsers: true, users: [] });
+			}
+			return res.render('admin/generate-pwd', { users, noUsers: false });
+		} catch (error) {
+			debug(error);
+			return res.render('admin/generate-pwd');
+		}
+	};
+
+	const generatePasswords = async (req, res) => {
+		for (let i = 0; i < users.length; i++) {
+			users[i].password = nanoid(10);
+			try {
+				const newUser = await User.create(users[i]);
+				if (newUser) {
+					debug('New User Created');
+				}
+
+				if (i === users.length - 1) {
+					return res.status(201).json({
+						status: 'success',
+						message: 'Passwords generated for all users'
+					});
+				}
+			} catch (error) {
+				return res.status(400).json({
+					status: 'failed',
+					message: 'Passwords not generated',
+					error: error.message
+				});
+			}
+		}
+	};
+
 	const logout = (req, res) => {
 		req.logOut();
 		req.session.destroy((err) => {
-			if(err) {
+			if (err) {
 				return res.json({
 					status: 'failed',
 					message: 'Logout failed',
@@ -2049,31 +2023,30 @@ const adminController = () => {
 		});
 	};
 
-  const middleware = (req, res, next) => {
-    try {
-      if (req.session.passport.user) {
-        return next();
-      }
-    } catch (error) {
-      return res.render('admin/401');
-    }
-  };
+	const middleware = (req, res, next) => {
+		try {
+			if (req.session.passport.user) {
+				return next();
+			}
+		} catch (error) {
+			return res.render('admin/401');
+		}
+	};
 
-  return {
-    getIndex,
-    getChangePwd,
-    postChangePwd,
-    createPosition,
-    registerCandidate,
-    getMapCandidates,
-    postMapCandidate,
-    fetchCandidates,
-    uploadImage,
-    getGenPasswordPage,
+	return {
+		getIndex,
+		getChangePwd,
+		postChangePwd,
+		createPosition,
+		registerCandidate,
+		getMapCandidates,
+		postMapCandidate,
+		fetchCandidates,
+		getGenPasswordPage,
 		generatePasswords,
 		logout,
-    middleware
-  };
+		middleware
+	};
 };
 
 module.exports = adminController();

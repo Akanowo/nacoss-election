@@ -371,6 +371,7 @@ if (window.location.pathname === '/admin/create-position' || window.location.pat
 }
 
 if (window.location.pathname === '/admin/register-candidate' || window.location.pathname === '/admin/register-candidate/') {
+  // const cl = new cloudinary.Cloudinary({cloud_name: "", secure: true});
   const matNo = $('#matNo');
   const registerForm = $('#registerForm');
   registerForm.parsley();
@@ -378,60 +379,24 @@ if (window.location.pathname === '/admin/register-candidate' || window.location.
 
   const uploadImgBtn = document.getElementById('uploadImgBtn');
 
-  uploadImgBtn.onclick = () => {
-    const formData = new FormData();
-    Swal.fire({
-      title: 'Upload Image',
-      input: 'file',
-      inputAttributes: {
-        autocapitalize: 'off'
-      },
-      showCancelButton: true,
-      confirmButtonText: 'Upload',
-      showLoaderOnConfirm: true,
-      preConfirm: (imgUrl) => {
-        try {
-          formData.append('image', imgUrl);
-          return axios.post('/admin/upload-image', formData)
-            .then((response) => {
-              if(response.data.status === 'failed') {
-                return Swal.fire({
-                  icon: 'error',
-                  title: response.data.status.toLocaleUpperCase(),
-                  text: response.data.message
-                });
-              }
-              image = response.data;
-              return response;
-            })
-            .catch((error) => {
-              Swal.showValidationMessage(
-                `Request failed: ${error}`
-              );
-            });
-        } catch (er) {
-          const message = 'Check your internet connection and refresh';
-          return Swal.fire({
-            icon: 'error',
-            title: 'Failed',
-            text: message
-          });
-        }
-      },
-      allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const message = 'Image uploaded successfully!';
-        return Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: message
-        });
+  const myWidget = cloudinary.createUploadWidget({
+    cloudName: 'dkn0vfgbg', 
+    uploadPreset: 'nacoss-election'
+  },(error, result) => { 
+      if (!error && result && result.event === "success") { 
+        console.log('Done! Here is the image info: ', result.info); 
+        image = result.info.secure_url;
       }
-    });
+    }
+  );
+
+  uploadImgBtn.onclick = (e) => {
+    e.preventDefault();
+    myWidget.open();
   };
 
   registerForm.on('submit', (e) => {
+    console.log(image);
     e.preventDefault();
     $.ajax({
       url: '/admin/register-candidate',
@@ -505,13 +470,13 @@ if (window.location.pathname === '/admin/map-candidates' || window.location.path
   });
 }
 
-if(window.location.pathname.includes('/admin')) {
+if (window.location.pathname.includes('/admin')) {
   const changePwdLink = document.getElementById('changePwdBtn');
   changePwdLink.onclick = (e) => {
     e.preventDefault();
     (async function changePassword() {
       const adminInfo = await axios.get('/admin/change-pwd');
-      if(adminInfo.data.status === 'success') {
+      if (adminInfo.data.status === 'success') {
         return Swal.fire({
           title: 'Change Password',
           html:
@@ -524,15 +489,15 @@ if(window.location.pathname.includes('/admin')) {
             const oldPwd = document.getElementById('swal-input1').value;
             const newPwd = document.getElementById('swal-input2').value;
             const confirmPwd = document.getElementById('swal-input3').value;
-  
+
             if (oldPwd.trim() !== adminInfo.data.admin.password) {
               return Swal.showValidationMessage('Incorrect previous password');
             }
-  
+
             if (!strongPasswordRegex.test(newPwd)) {
               return Swal.showValidationMessage('Password criteria not met');
             }
-  
+
             if (newPwd.trim() !== confirmPwd.trim()) {
               return Swal.showValidationMessage('Passwords do not match');
             }
@@ -590,9 +555,9 @@ if(window.location.pathname.includes('/admin')) {
       showCancelButton: true,
       cancelButtonText: 'No'
     }).then(async (result) => {
-      if(result.isConfirmed) {
+      if (result.isConfirmed) {
         const logoutResponse = await axios.get('/admin/logout');
-        if(logoutResponse.data.status === 'logged out') {
+        if (logoutResponse.data.status === 'logged out') {
           window.location.href = '/auth/login/admin';
         }
       }
@@ -626,18 +591,18 @@ if(window.location.pathname.includes('/admin')) {
   });
 }
 
-if(window.location.pathname === '/admin/generate-passwords' || window.location.href === '/admin/generate-passwords/') {
+if (window.location.pathname === '/admin/generate-passwords' || window.location.href === '/admin/generate-passwords/') {
   const genBtn = document.getElementById('generateBtn');
   genBtn.onclick = async (ev) => {
     ev.preventDefault();
     const users = await axios.get('/admin/generate-passwords/generate');
-    if(users.data.status === 'success') {
+    if (users.data.status === 'success') {
       Swal.fire({
         icon: 'success',
         title: 'Success',
         text: users.data.message
       }).then((result) => {
-        if(result.isConfirmed || result.isDismissed) {
+        if (result.isConfirmed || result.isDismissed) {
           window.location.reload();
         }
       });
