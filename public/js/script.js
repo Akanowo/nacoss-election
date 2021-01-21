@@ -381,7 +381,8 @@ if (window.location.pathname === '/admin/register-candidate' || window.location.
 
   const myWidget = cloudinary.createUploadWidget({
     cloudName: 'dkn0vfgbg', 
-    uploadPreset: 'nacoss-election'
+    uploadPreset: 'nacoss-election',
+    maxFileSize: 2097152
   },(error, result) => { 
       if (!error && result && result.event === "success") { 
         console.log('Done! Here is the image info: ', result.info); 
@@ -390,8 +391,7 @@ if (window.location.pathname === '/admin/register-candidate' || window.location.
     }
   );
 
-  uploadImgBtn.onclick = (e) => {
-    e.preventDefault();
+  uploadImgBtn.onclick = () => {
     myWidget.open();
   };
 
