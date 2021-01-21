@@ -1805,6 +1805,17 @@ const adminController = () => {
 	const registerCandidate = async (req, res) => {
 		const { matNo } = req.body;
 		const { image } = req.body;
+
+		console.log(image);
+
+		const validUser = await User.findOne({ matNo });
+		if(!validUser) {
+			return res.json({
+				status: 'failed',
+				error: 'Matric Number is not a valid nacossite'
+			});
+		}
+
 		const candidate = await Candidate.findOne({ matNo });
 		if (candidate) {
 			return res.status(400).json({

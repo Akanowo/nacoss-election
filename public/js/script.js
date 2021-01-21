@@ -416,7 +416,7 @@ if (window.location.pathname === '/admin/register-candidate' || window.location.
           Swal.fire({
             icon: 'error',
             title: response.status.toLocaleUpperCase(),
-            text: response.message
+            text: response.message ? response.message : response.error
           });
         }
       },
