@@ -16,6 +16,7 @@ const voteController = () => {
         const candidate = await Candidate.findOne({ _id: oneCandidate.candidateId });
         const position = await Position.findOne({ _id: oneCandidate.positionId });
         const candidateDetail = await User.findOne({ matNo: candidate.matNo });
+        // push candiates to electionDetails array
         electionDetails.push({
           name: candidateDetail.name,
           id: candidate._id,
