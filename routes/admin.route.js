@@ -11,7 +11,6 @@ const routes = () => {
     getMapCandidates,
     postMapCandidate,
     fetchCandidates,
-    uploadImage,
     getGenPasswordPage,
     generatePasswords,
     logout,
@@ -46,8 +45,8 @@ const routes = () => {
     .get(getMapCandidates)
     .post(postMapCandidate);
 
-  adminRouter.route('/upload-image')
-    .post(uploadImage);
+  // adminRouter.route('/upload-image')
+  //   .post(uploadImage);
 
   adminRouter.route('/generate-passwords')
     .get(getGenPasswordPage);

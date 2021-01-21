@@ -16,13 +16,12 @@ const voteController = () => {
         const candidate = await Candidate.findOne({ _id: oneCandidate.candidateId });
         const position = await Position.findOne({ _id: oneCandidate.positionId });
         const candidateDetail = await User.findOne({ matNo: candidate.matNo });
-        debug(candidate.image);
-        const imageSplit = candidate.image.split('/');
+        // push candiates to electionDetails array
         electionDetails.push({
           name: candidateDetail.name,
           id: candidate._id,
           matNo: candidate.matNo,
-          image: `${'/' + imageSplit[2] + '/' + imageSplit[3] + '/' + imageSplit[4] }`,
+          image: candidate.image,
           post: position.name,
           votes: candidate.votes
         });
